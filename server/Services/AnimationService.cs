@@ -9,13 +9,14 @@ public static class AnimationService
         return new Animation
         {
             AnimationCode = """
-import { useGSAP } from "@gsap/react";
+            import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 
 function VerticalFlowchart() {
   useGSAP(() => {
     const tl = gsap.timeline({ repeat: -1, repeatDelay: 1 });
 
+    // First box appears immediately
     tl.from("#box-1", {
       opacity: 0,
       y: 20,
@@ -23,12 +24,14 @@ function VerticalFlowchart() {
       ease: "power3.out",
     });
 
+    // Arrow 1 draws
     tl.to("#arrow-1", {
       strokeDashoffset: 0,
       duration: 0.6,
       ease: "power2.inOut",
     });
 
+    // Box 2 appears AFTER arrow
     tl.from("#box-2", {
       opacity: 0,
       y: 20,
@@ -81,13 +84,21 @@ function VerticalFlowchart() {
       <div className="flex flex-col items-center">
 
         <FlowBox id="box-1" text="👤 User selects a tab" />
+
         <Arrow id="arrow-1" />
+
         <FlowBox id="box-2" text="🧭 Frontend sets active tab" />
+
         <Arrow id="arrow-2" />
+
         <FlowBox id="box-3" text="⚛️ State updates" />
+
         <Arrow id="arrow-3" />
+
         <FlowBox id="box-4" text="🌐 API request fired" />
+
         <Arrow id="arrow-4" />
+
         <FlowBox id="box-5" text="📦 Data received → UI rendered" />
 
       </div>

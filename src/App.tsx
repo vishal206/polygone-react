@@ -3,9 +3,37 @@ import {
   SandpackPreview,
   SandpackProvider,
 } from "@codesandbox/sandpack-react";
-import { GSAP_VERTICAL_FLOWCHART_CODE } from "./utils/constants";
+import { useEffect, useState } from "react";
 
 function App() {
+  const [animationCode, setAnimationCode] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/ai/demo-code")
+      .then((res) => res.json())
+      .then((data) => {
+        setAnimationCode(data.animationCode);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Failed to load demo code", err);
+        setLoading(false);
+      });
+  }, []);
+
+  useEffect(() => {
+    console.log("Received animation code:", animationCode);
+  }, [animationCode]);
+
+  if (loading) {
+    return (
+      <div className="h-screen flex items-center justify-center text-white bg-black">
+        Loading animation…
+      </div>
+    );
+  }
+
   return (
     <div className="overflow-hidden h-screen">
       <SandpackProvider
@@ -23,7 +51,7 @@ function App() {
         }}
         style={{ height: "100vh" }}
         files={{
-          "/App.js": GSAP_VERTICAL_FLOWCHART_CODE,
+          "/App.js": animationCode,
         }}
       >
         <SandpackLayout style={{ height: "100vh" }}>
