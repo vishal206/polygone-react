@@ -3,7 +3,7 @@ import {
   SandpackPreview,
   SandpackProvider,
 } from "@codesandbox/sandpack-react";
-import { GSAP_TAB_API_FLOWCHART_CODE } from "./utils/constants";
+import { GSAP_VERTICAL_FLOWCHART_CODE } from "./utils/constants";
 
 function App() {
   return (
@@ -23,7 +23,7 @@ function App() {
         }}
         style={{ height: "100vh" }}
         files={{
-          "/App.js": GSAP_TAB_API_FLOWCHART_CODE,
+          "/App.js": GSAP_VERTICAL_FLOWCHART_CODE,
         }}
       >
         <SandpackLayout style={{ height: "100vh" }}>
