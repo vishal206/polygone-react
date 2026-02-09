@@ -137,6 +137,7 @@ function Arrow({ id }) {
 }
 
 export default VerticalFlowchart;
+
 """
         };
     }

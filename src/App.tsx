@@ -22,10 +22,6 @@ function App() {
       });
   }, []);
 
-  useEffect(() => {
-    console.log("Received animation code:", animationCode);
-  }, [animationCode]);
-
   if (loading) {
     return (
       <div className="h-screen flex items-center justify-center text-white bg-black">
