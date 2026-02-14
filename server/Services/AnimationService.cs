@@ -1,14 +1,25 @@
-using server.Models;
-
 namespace server.Services;
 
-public static class AnimationService
+using server.Models;
+using System.Text.RegularExpressions;
+
+
+public interface IAnimationService
 {
-    public static Animation GetDemoAnimation()
+  Task<Animation> CreateNewAnimation(string userDescription);
+}
+
+
+public partial class AnimationService(IOllamaService ollamaSerivce) : IAnimationService
+{
+
+  private readonly IOllamaService _ollamaService = ollamaSerivce;
+
+  public static Animation GetDemoAnimation()
+  {
+    return new Animation
     {
-        return new Animation
-        {
-            AnimationCode = """
+      AnimationCode = """
             import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 
@@ -139,64 +150,110 @@ function Arrow({ id }) {
 export default VerticalFlowchart;
 
 """
-        };
-    }
+    };
+  }
 
-    public static Animation CreateNewAnimation(string userDescription)
+  public async Task<Animation> CreateNewAnimation(string userDescription)
   {
-    string prompt = $"""
-      You are an expert frontend engineer and motion designer.
+    string prompt = $$"""
+    # ROLE
+    You are a deterministic React + GSAP code generator.
 
-      Input:
-      - userDescription: A natural language description of a frontend or system flow
-        (example: "User clicks a tab, frontend updates state, API is called, data is rendered")
+    You do NOT behave like a conversational assistant.
+    You do NOT explain.
+    You do NOT apologize.
+    You ONLY output valid JavaScript code.
 
-      Task:
-      - Generate a React component using GSAP and @gsap/react
-      - Export the component as a STRING assigned to a const
-      - The animation must be a VERTICAL FLOWCHART
+    # INPUT
+    userDescription:
+    "{{userDescription}}"
 
-      Animation rules (VERY IMPORTANT):
-      1. The layout must be full-screen safe (w-screen, h-screen, centered).
-      2. The flow must be vertical (top → bottom).
-      3. Each step must be represented as a box.
-      4. Between every two boxes, render a downward arrow using SVG.
-      5. ANIMATION SEQUENCE:
-        - The first box appears.
-        - THEN the arrow below it animates (strokeDashoffset from full to 0).
-        - ONLY AFTER the arrow finishes, the next box appears.
-        - Repeat this pattern for all steps.
-      6. No play/pause buttons. The animation auto-runs and loops.
-      7. Use Tailwind CSS utility classes for styling.
-      8. Use GSAP timeline for strict sequencing.
-      9. Keep the code readable and minimal — no unnecessary abstractions.
+    # OBJECTIVE
+    Generate a full React component that visualizes the animation from userDescription using GSAP.
 
-      Code requirements:
-      - Use useGSAP from "@gsap/react"
-      - Use gsap.timeline()
-      - Use unique IDs for boxes and arrows (box-1, arrow-1, etc.)
-      - Export format must be:
+    # STRUCTURE REQUIREMENTS (MANDATORY)
 
-        export const GENERATED_GSAP_CODE = \`
-          ...full React component code...
-        \`;
+    1. The flow must represent the logical sequence of events described in userDescription.
+    2. Each logical step must be rendered as a visual box.
+    3. The layout must be full screen using:
+      className="w-screen h-screen flex items-center justify-center"
+    4. The inner container must use:
+      className="flex flex-col items-center"
+    5. Each div must have a unique id.
 
-      Output:
-      - Return ONLY the code string
-      - Do NOT include explanations
-      - Do NOT include markdown
-      - Do NOT include comments outside the code
-      - The code must be directly runnable inside a React app
+    # ANIMATION RULES (STRICT AND GLOBAL)
 
-      Now generate the GSAP animation code based on this userDescription:
-      {userDescription}
+    - Use useGSAP from "@gsap/react" and gsap from "gsap".
+    - always use timeline.
+    - Use `timeline = gsap.timeline(...)` not `timeline = useGSAP(gsap.timline(...)`
+    - The animation must auto-loop.
+    - No buttons.
+    - No user interaction.
+    - No simplification to a single animated element.
+
+    useGSAP:
+    React hook from "@gsap/react" that runs GSAP animations with automatic context scoping and cleanup.  
+    Syntax: useGSAP(callback, { scope, dependencies, revertOnUpdate })  
+    • scope → ref for selector scoping  
+    • dependencies → re-run control  
+    • revertOnUpdate → auto cleanup on update  
+
+    gsap.timeline():
+    Creates a sequenced animation controller for multiple tweens.  
+    Syntax: gsap.timeline({ defaults, delay, paused, repeat, repeatDelay, yoyo })  
+    • defaults → shared tween properties  
+    • paused → start paused  
+    • repeat / repeatDelay → loop control  
+    • yoyo → reverse on repeat  
+    Methods: to(), from(), fromTo(), set(), add(), play(), pause(), reverse()
+      - In methods like to(), from(), use the #ID directly, don't use gsap.select()
+
+    - useGSAP must be used instead of React.useEffect.
+    - The selector used in timeline must exactly match an element rendered in JSX.
+    - Do NOT animate non-existing selectors.
+    - Do NOT store timeline in a DOM ref.
+
+    # CODE REQUIREMENTS
+
+    The output MUST:
+
+    - Start EXACTLY with:
+      import { useGSAP } from "@gsap/react";
+      import gsap from "gsap";
+      import React from "react";
+
+    - Define exactly one main React component (any valid function name).
+    - Use Tailwind CSS utility classes.
+    - End with:
+      export default <MainComponentName>;
+
+    # OUTPUT CONTRACT (CRITICAL)
+
+    - Output ONLY raw JavaScript / React code.
+    - Do NOT include markdown.
+    - Do NOT include ```jsx or ```javascript.
+    - Do NOT include JSON.
+    - Do NOT include explanations.
+    - Do NOT include commentary.
+    - Do NOT include any text before the first import.
+    - Do NOT include any text after export default.
+
+    If anything outside valid JavaScript code is included, the output is invalid.
+
+    # GENERATE NOW
     """;
 
-    var code = LangChainService.GenerateAnimationCode(prompt);
+
+    var code = await _ollamaService.GenerateAsync(prompt);
+    var cleanedCode = MyRegex().Replace(code, "").Replace("```", "").Trim();
+
 
     return new Animation
     {
-        AnimationCode = code.Result 
+      AnimationCode = cleanedCode
     };
   }
+
+  [GeneratedRegex(@"```[a-zA-Z]*")]
+  private static partial Regex MyRegex();
 }

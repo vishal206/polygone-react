@@ -3,21 +3,54 @@ import {
   SandpackPreview,
   SandpackProvider,
 } from "@codesandbox/sandpack-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 function App() {
   const [animationCode, setAnimationCode] = useState("");
   const [loading, setLoading] = useState(true);
 
+  // useEffect(() => {
+  //   fetch("/ai/demo-code")
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       setAnimationCode(data.animationCode);
+  //       setLoading(false);
+  //     })
+  //     .catch((err) => {
+  //       console.error("Failed to load demo code", err);
+  //       setLoading(false);
+  //     });
+  // }, []);
+
+  const hasRun = useRef(false);
+
   useEffect(() => {
-    fetch("/ai/demo-code")
-      .then((res) => res.json())
+    if (hasRun.current) return;
+    hasRun.current = true;
+
+    fetch("/ai/start-animation", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userDescription:
+          "3 square ( green, yellow and blue ) moving from up down ( just 200 px) in a repeated motion and it should be one after another like a wave one after another.",
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return res.json();
+      })
       .then((data) => {
+        console.log("animationCode", data.animationCode);
         setAnimationCode(data.animationCode);
         setLoading(false);
       })
       .catch((err) => {
-        console.error("Failed to load demo code", err);
+        console.error("Failed to generate animation", err);
         setLoading(false);
       });
   }, []);
