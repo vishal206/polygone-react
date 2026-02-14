@@ -141,4 +141,62 @@ export default VerticalFlowchart;
 """
         };
     }
+
+    public static Animation CreateNewAnimation(string userDescription)
+  {
+    string prompt = $"""
+      You are an expert frontend engineer and motion designer.
+
+      Input:
+      - userDescription: A natural language description of a frontend or system flow
+        (example: "User clicks a tab, frontend updates state, API is called, data is rendered")
+
+      Task:
+      - Generate a React component using GSAP and @gsap/react
+      - Export the component as a STRING assigned to a const
+      - The animation must be a VERTICAL FLOWCHART
+
+      Animation rules (VERY IMPORTANT):
+      1. The layout must be full-screen safe (w-screen, h-screen, centered).
+      2. The flow must be vertical (top → bottom).
+      3. Each step must be represented as a box.
+      4. Between every two boxes, render a downward arrow using SVG.
+      5. ANIMATION SEQUENCE:
+        - The first box appears.
+        - THEN the arrow below it animates (strokeDashoffset from full to 0).
+        - ONLY AFTER the arrow finishes, the next box appears.
+        - Repeat this pattern for all steps.
+      6. No play/pause buttons. The animation auto-runs and loops.
+      7. Use Tailwind CSS utility classes for styling.
+      8. Use GSAP timeline for strict sequencing.
+      9. Keep the code readable and minimal — no unnecessary abstractions.
+
+      Code requirements:
+      - Use useGSAP from "@gsap/react"
+      - Use gsap.timeline()
+      - Use unique IDs for boxes and arrows (box-1, arrow-1, etc.)
+      - Export format must be:
+
+        export const GENERATED_GSAP_CODE = \`
+          ...full React component code...
+        \`;
+
+      Output:
+      - Return ONLY the code string
+      - Do NOT include explanations
+      - Do NOT include markdown
+      - Do NOT include comments outside the code
+      - The code must be directly runnable inside a React app
+
+      Now generate the GSAP animation code based on this userDescription:
+      {userDescription}
+    """;
+
+    var code = LangChainService.GenerateAnimationCode(prompt);
+
+    return new Animation
+    {
+        AnimationCode = code.Result 
+    };
+  }
 }
