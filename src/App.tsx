@@ -9,19 +9,6 @@ function App() {
   const [animationCode, setAnimationCode] = useState("");
   const [loading, setLoading] = useState(true);
 
-  // useEffect(() => {
-  //   fetch("/ai/demo-code")
-  //     .then((res) => res.json())
-  //     .then((data) => {
-  //       setAnimationCode(data.animationCode);
-  //       setLoading(false);
-  //     })
-  //     .catch((err) => {
-  //       console.error("Failed to load demo code", err);
-  //       setLoading(false);
-  //     });
-  // }, []);
-
   const hasRun = useRef(false);
 
   useEffect(() => {
