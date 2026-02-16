@@ -4,14 +4,14 @@ using System.Text.Json;
 using server.Models;
 public interface IOllamaService
 {
-    Task<string> GenerateAsync(string prompt);
+    Task<GeneratedResult> GenerateAsync(string prompt);
 }
 
 public class OllamaService(HttpClient httpClient) : IOllamaService
 {
     private readonly HttpClient _httpClient = httpClient;
 
-    public async Task<string> GenerateAsync(string prompt)
+    public async Task<GeneratedResult> GenerateAsync(string prompt)
     {
         var request = new
         {
@@ -82,13 +82,7 @@ Return ONLY valid JSON.
         if (string.IsNullOrWhiteSpace(structured.Code))
             throw new Exception("Model returned empty code.");
 
-        return structured.Code;
+        return structured;
     }
 
-}
-
-public class GeneratedResult
-{
-    public required string Code { get; set; }
-    public required string Message { get; set; }
 }

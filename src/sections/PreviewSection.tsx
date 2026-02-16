@@ -1,18 +1,20 @@
+import { useChat } from "@/contexts/ChatContexts";
 import {
   SandpackLayout,
   SandpackPreview,
   SandpackProvider,
 } from "@codesandbox/sandpack-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 export default function PreviewSection() {
+  const { userInput, setAiOutput, setIsFetchingOutput } = useChat();
   const [animationCode, setAnimationCode] = useState("");
   const [loading, setLoading] = useState(true);
-
-  const hasRun = useRef(false);
+  // "3 square ( green, yellow and blue ) moving from up down ( just 200 px) in a repeated motion and it should be one after another like a wave one after another."
 
   useEffect(() => {
-    if (hasRun.current) return;
-    hasRun.current = true;
+    if (userInput == "") return;
+
+    setIsFetchingOutput(true);
 
     fetch("/ai/start-animation", {
       method: "POST",
@@ -20,8 +22,7 @@ export default function PreviewSection() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        userDescription:
-          "3 square ( green, yellow and blue ) moving from up down ( just 200 px) in a repeated motion and it should be one after another like a wave one after another.",
+        userDescription: userInput,
       }),
     })
       .then((res) => {
@@ -33,13 +34,23 @@ export default function PreviewSection() {
       .then((data) => {
         console.log("animationCode", data.animationCode);
         setAnimationCode(data.animationCode);
+        setAiOutput({
+          aiMessage: data.animationResponseMessage,
+          aiCode: data.animationCode,
+        });
         setLoading(false);
+        setIsFetchingOutput(false);
       })
       .catch((err) => {
+        setAiOutput({
+          aiMessage: "Failed to generate animation:" + err,
+          aiCode: "",
+        });
         console.error("Failed to generate animation", err);
         setLoading(false);
+        setIsFetchingOutput(false);
       });
-  }, []);
+  }, [userInput]);
 
   if (loading) {
     return (

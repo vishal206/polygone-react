@@ -5,20 +5,18 @@ import {
   InputGroupAddon,
   InputGroupButton,
 } from "@/components/ui/input-group";
+import { useChat } from "@/contexts/ChatContexts";
 import { useState } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 
-type ChatInputProps = {
-  setText: (value: string) => void;
-};
-
-export function ChatInput({ setText }: ChatInputProps) {
+export function ChatInput() {
   const [value, setValue] = useState("");
+  const { setUserInput } = useChat();
 
   const handleSubmit = () => {
     if (!value.trim()) return;
 
-    setText(value); // send text to parent
+    setUserInput(value); // send text to parent
     setValue(""); // clear textarea
   };
   return (

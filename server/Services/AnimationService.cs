@@ -149,7 +149,8 @@ function Arrow({ id }) {
 
 export default VerticalFlowchart;
 
-"""
+""",
+      AnimationResponseMessage = "Demo Code fetched."
     };
   }
 
@@ -244,13 +245,14 @@ export default VerticalFlowchart;
     """;
 
 
-    var code = await _ollamaService.GenerateAsync(prompt);
-    var cleanedCode = MyRegex().Replace(code, "").Replace("```", "").Trim();
+    var generatedMessage = await _ollamaService.GenerateAsync(prompt);
+    var cleanedCode = MyRegex().Replace(generatedMessage.Code, "").Replace("```", "").Trim();
 
 
     return new Animation
     {
-      AnimationCode = cleanedCode
+      AnimationCode = cleanedCode,
+      AnimationResponseMessage = generatedMessage.Message
     };
   }
 
