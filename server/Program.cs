@@ -9,6 +9,7 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 builder.Services.AddHttpClient<IOllamaService, OllamaService>();
+builder.Services.AddScoped<IOpenAiService, OpenAiService>();
 builder.Services.AddScoped<IAnimationService, AnimationService>();
 
 var app = builder.Build();

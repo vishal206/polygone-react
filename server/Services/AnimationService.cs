@@ -10,10 +10,10 @@ public interface IAnimationService
 }
 
 
-public partial class AnimationService(IOllamaService ollamaSerivce) : IAnimationService
+public partial class AnimationService(IOpenAiService openAIService) : IAnimationService
 {
 
-  private readonly IOllamaService _ollamaService = ollamaSerivce;
+  private readonly IOpenAiService _openAiService = openAIService;
 
   public static Animation GetDemoAnimation()
   {
@@ -228,6 +228,13 @@ export default VerticalFlowchart;
     - End with:
       export default <MainComponentName>;
 
+    You MUST return a valid JSON object with EXACTLY this structure:
+
+    {
+      "Code": "<FULL REACT COMPONENT CODE AS STRING>",
+      "Message": "<Message for the User>"
+    }
+
     # OUTPUT CONTRACT (CRITICAL)
 
     - Output ONLY raw JavaScript / React code.
@@ -240,12 +247,10 @@ export default VerticalFlowchart;
     - Do NOT include any text after export default.
 
     If anything outside valid JavaScript code is included, the output is invalid.
-
-    # GENERATE NOW
     """;
 
 
-    var generatedMessage = await _ollamaService.GenerateAsync(prompt);
+    var generatedMessage = await _openAiService.GenerateAsync(prompt);
     var cleanedCode = MyRegex().Replace(generatedMessage.Code, "").Replace("```", "").Trim();
 
 
