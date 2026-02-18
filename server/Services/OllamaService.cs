@@ -15,7 +15,7 @@ public class OllamaService(HttpClient httpClient) : IOllamaService
     {
         var request = new
         {
-            model = "mistral",
+            model = "deepseek-coder-v2:16b",
             stream = false,
             format = "json",
             messages = new[]
