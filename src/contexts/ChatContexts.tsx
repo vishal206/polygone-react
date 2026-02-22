@@ -27,19 +27,26 @@ export const ChatProvider = ({ children }: ChatProviderProps) => {
   const [aiOutput, setAiOutput] = useState<aiMessageProp>();
   const [isFetchingOutput, setIsFetchingOutput] = useState(false);
   const [conversations, setConversations] = useState<ConversationProps[]>([]);
+  const [requestId, setRequestId] = useState(0);
+  const [chatPosition, setChatPosition] = useState<
+    | {
+        x: number;
+        y: number;
+      }
+    | undefined
+  >();
 
   useEffect(() => {
     if (aiOutput) {
-      console.log("AiOutput:", aiOutput);
-      setConversations([
-        ...conversations,
+      setConversations((prev) => [
+        ...prev,
         {
           user: userInput,
           ai: aiOutput,
         },
       ]);
     }
-  }, [aiOutput]);
+  }, [aiOutput, userInput]);
 
   return (
     <ChatContext.Provider
@@ -51,6 +58,10 @@ export const ChatProvider = ({ children }: ChatProviderProps) => {
         conversations,
         isFetchingOutput,
         setIsFetchingOutput,
+        chatPosition,
+        setChatPosition,
+        requestId,
+        setRequestId,
       }}
     >
       {children}

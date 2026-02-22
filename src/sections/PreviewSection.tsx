@@ -4,15 +4,19 @@ import {
   SandpackPreview,
   SandpackProvider,
 } from "@codesandbox/sandpack-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 export default function PreviewSection() {
-  const { userInput, setAiOutput, setIsFetchingOutput } = useChat();
+  const { userInput, setAiOutput, setIsFetchingOutput, requestId } = useChat();
   const [animationCode, setAnimationCode] = useState("");
   const [loading, setLoading] = useState(true);
+  const hasFetchedRef = useRef(false);
   // "3 square ( green, yellow and blue ) moving from up down ( just 200 px) in a repeated motion and it should be one after another like a wave one after another."
 
   useEffect(() => {
     if (userInput == "") return;
+    if (hasFetchedRef.current) return;
+
+    hasFetchedRef.current = true;
 
     setIsFetchingOutput(true);
 
@@ -50,7 +54,7 @@ export default function PreviewSection() {
         setLoading(false);
         setIsFetchingOutput(false);
       });
-  }, [userInput]);
+  }, [requestId]);
 
   if (loading) {
     return (

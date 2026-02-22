@@ -11,12 +11,12 @@ import TextareaAutosize from "react-textarea-autosize";
 
 export function ChatInput() {
   const [value, setValue] = useState("");
-  const { setUserInput } = useChat();
+  const { setUserInput, setRequestId } = useChat();
 
   const handleSubmit = () => {
     if (!value.trim()) return;
-
     setUserInput(value); // send text to parent
+    setRequestId((prev: number) => prev + 1);
     setValue(""); // clear textarea
   };
   return (
